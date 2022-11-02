@@ -4,7 +4,15 @@ import './widgets/new_transaction.dart';
 import './widgets/chart.dart';
 import './models/transaction.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  // WidgetsFlutterBinding.ensureInitialized();
+  // SystemChrome.setPreferredOrientations([
+  //   DeviceOrientation.portraitUp,
+  //   DeviceOrientation.portraitDown,
+  // ]);
+  //limits the app to specific device orientations
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -53,12 +61,16 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final List<Transaction> _userTransactions = [];
 
+  bool _showChart = false;
+
   List<Transaction> get _recentTransactions {
     return _userTransactions.where((tx) {
+      //gets elemetnts from a list that fulfills certain conditions
       return tx.date.isAfter(DateTime.now().subtract(
         Duration(
           days: 7,
         ),
+        //returns all elements after the given condition is satisfied
       ));
     }).toList();
   }
@@ -81,6 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _userTransactions.removeWhere((tx) {
         return tx.id == id;
       });
+      //removes elements from a list that fulfills certain conditions
     });
   }
 
@@ -97,37 +110,91 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Personal Expenses'),
-        actions: [
-          IconButton(
-            onPressed: () => _startAddNewTransactions(context),
-            icon: Icon(Icons.add),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Chart(recentTransactions: _recentTransactions),
-            TransactionList(
-              transactions: _userTransactions,
-              deleteTx: _deleteTransaction,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
+  FloatingActionButton showFloatingButton(isLandscape) {
+    if (!isLandscape) {
+      return FloatingActionButton(
         onPressed: () => _startAddNewTransactions(context),
         //_startAddNewTransactions function takes BuildContext argument
         //so it is passed as a functon here with argument context of type BuildContext
         //with the help of an anonymous function
         child: Icon(Icons.add),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final bool isLandscape = mediaQuery.orientation == Orientation.landscape;
+    //shows whether the device is potrait or landscape
+
+    final appBar = AppBar(
+      title: Text('Personal Expenses'),
+      actions: [
+        IconButton(
+          onPressed: () => _startAddNewTransactions(context),
+          icon: Icon(Icons.add),
+        ),
+      ],
+    );
+
+    final txListWidget = Container(
+      height: (mediaQuery.size.height -
+              appBar.preferredSize.height -
+              mediaQuery.padding.top) *
+          0.7,
+      child: TransactionList(
+        transactions: _userTransactions,
+        deleteTx: _deleteTransaction,
+        isLandscape: isLandscape,
       ),
+    );
+
+    return Scaffold(
+      appBar: appBar,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (isLandscape)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Show Chart!'),
+                  Switch(
+                      value: _showChart,
+                      onChanged: (val) {
+                        setState(() {
+                          _showChart = val;
+                        });
+                      }),
+                ],
+              ),
+            if (!isLandscape)
+              Container(
+                height: (mediaQuery.size.height -
+                        appBar.preferredSize.height -
+                        mediaQuery.padding.top) *
+                    0.3,
+                //gets the height available in device after removing the height taken by appbar and status bar
+                child: Chart(recentTransactions: _recentTransactions),
+              ),
+            if (!isLandscape) txListWidget,
+            if (isLandscape)
+              _showChart
+                  ? Container(
+                      height: (mediaQuery.size.height -
+                              appBar.preferredSize.height -
+                              mediaQuery.padding.top) *
+                          0.8,
+                      //gets the height available in device after removing the height taken by appbar and status bar
+                      child: Chart(recentTransactions: _recentTransactions),
+                    )
+                  : txListWidget
+          ],
+        ),
+      ),
+      floatingActionButton: showFloatingButton(isLandscape),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
