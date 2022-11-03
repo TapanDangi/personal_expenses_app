@@ -3,12 +3,13 @@ import 'package:intl/intl.dart';
 import '../models/transaction.dart';
 
 class TransactionList extends StatelessWidget {
-  TransactionList({Key key, this.transactions, this.deleteTx, this.isLandscape})
+  const TransactionList(
+      {Key key, this.transactions, this.deleteTx, this.isLandscape})
       : super(key: key);
 
   final List<Transaction> transactions;
   final Function deleteTx;
-  bool isLandscape;
+  final bool isLandscape;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,7 @@ class TransactionList extends StatelessWidget {
                   SizedBox(
                     height: constraints.maxHeight * 0.15,
                   ),
-                  Container(
+                  SizedBox(
                     height: constraints.maxHeight * 0.6,
                     child: Image.asset(
                       'assets/images/waiting.png',
@@ -40,16 +41,16 @@ class TransactionList extends StatelessWidget {
               return Card(
                 elevation: 5,
                 color: Colors.grey[200],
-                margin: EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
                 child: ListTile(
                   leading: CircleAvatar(
                     radius: 30,
                     child: FittedBox(
                       child: Padding(
-                        padding: EdgeInsets.all(6),
+                        padding: const EdgeInsets.all(6),
                         child: Text(
                           '${transactions[index].amount}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -66,14 +67,14 @@ class TransactionList extends StatelessWidget {
                   trailing: isLandscape
                       ? TextButton.icon(
                           onPressed: () => deleteTx(transactions[index].id),
-                          icon: Icon(Icons.delete),
-                          label: Text('Delete'),
+                          icon: const Icon(Icons.delete),
+                          label: const Text('Delete'),
                           style: TextButton.styleFrom(
                             primary: Theme.of(context).errorColor,
                           ),
                         )
                       : IconButton(
-                          icon: Icon(Icons.delete),
+                          icon: const Icon(Icons.delete),
                           color: Theme.of(context).errorColor,
                           onPressed: () => deleteTx(transactions[index].id),
                         ),

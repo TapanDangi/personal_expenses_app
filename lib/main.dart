@@ -11,10 +11,12 @@ void main() {
   //   DeviceOrientation.portraitDown,
   // ]);
   //limits the app to specific device orientations
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -28,18 +30,18 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Quicksand',
         //used for all fonts in the app
         textTheme: ThemeData.light().textTheme.copyWith(
-              headline6: TextStyle(
+              headline6: const TextStyle(
                 fontFamily: 'OpenSans',
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
-              button: TextStyle(
+              button: const TextStyle(
                 color: Colors.white,
               ),
             ),
         //common theme for titles of transactions
         //can be used in the style argument of widget wehere transactions are defined
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
           titleTextStyle: TextStyle(
             fontFamily: 'OpenSans',
             fontSize: 20,
@@ -48,12 +50,14 @@ class MyApp extends StatelessWidget {
         ),
       ),
       //to set the specifications of the theme of appbar different from the universal font
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key key}) : super(key: key);
+
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -67,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return _userTransactions.where((tx) {
       //gets elemetnts from a list that fulfills certain conditions
       return tx.date.isAfter(DateTime.now().subtract(
-        Duration(
+        const Duration(
           days: 7,
         ),
         //returns all elements after the given condition is satisfied
@@ -103,13 +107,14 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (_) {
         return GestureDetector(
           onTap: () {},
-          child: NewTransaction(addtx: _addNewTransaction),
           behavior: HitTestBehavior.opaque,
+          child: NewTransaction(addtx: _addNewTransaction),
         );
       },
     );
   }
 
+  // ignore: missing_return
   FloatingActionButton showFloatingButton(isLandscape) {
     if (!isLandscape) {
       return FloatingActionButton(
@@ -117,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
         //_startAddNewTransactions function takes BuildContext argument
         //so it is passed as a functon here with argument context of type BuildContext
         //with the help of an anonymous function
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       );
     }
   }
@@ -129,16 +134,16 @@ class _MyHomePageState extends State<MyHomePage> {
     //shows whether the device is potrait or landscape
 
     final appBar = AppBar(
-      title: Text('Personal Expenses'),
+      title: const Text('Personal Expenses'),
       actions: [
         IconButton(
           onPressed: () => _startAddNewTransactions(context),
-          icon: Icon(Icons.add),
+          icon: const Icon(Icons.add),
         ),
       ],
     );
 
-    final txListWidget = Container(
+    final txListWidget = SizedBox(
       height: (mediaQuery.size.height -
               appBar.preferredSize.height -
               mediaQuery.padding.top) *
@@ -160,7 +165,7 @@ class _MyHomePageState extends State<MyHomePage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Show Chart!'),
+                  const Text('Show Chart!'),
                   Switch(
                       value: _showChart,
                       onChanged: (val) {
@@ -171,7 +176,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             if (!isLandscape)
-              Container(
+              SizedBox(
                 height: (mediaQuery.size.height -
                         appBar.preferredSize.height -
                         mediaQuery.padding.top) *
@@ -182,7 +187,7 @@ class _MyHomePageState extends State<MyHomePage> {
             if (!isLandscape) txListWidget,
             if (isLandscape)
               _showChart
-                  ? Container(
+                  ? SizedBox(
                       height: (mediaQuery.size.height -
                               appBar.preferredSize.height -
                               mediaQuery.padding.top) *

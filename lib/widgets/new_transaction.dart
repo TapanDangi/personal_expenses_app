@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class NewTransaction extends StatefulWidget {
-  NewTransaction({Key key, this.addtx}) : super(key: key);
+  const NewTransaction({Key key, this.addtx}) : super(key: key);
 
   final Function addtx;
 
@@ -65,19 +65,19 @@ class _NewTransactionState extends State<NewTransaction> {
           child: Column(
             children: [
               TextField(
-                decoration: InputDecoration(labelText: 'Title'),
+                decoration: const InputDecoration(labelText: 'Title'),
                 controller: _titleController,
                 onSubmitted: (_) => _submitData(),
                 //submitData is passed as a function as there is a wrapping anonymous function for it
               ),
               TextField(
-                decoration: InputDecoration(labelText: 'Amount'),
+                decoration: const InputDecoration(labelText: 'Amount'),
                 controller: _amountController,
                 keyboardType: TextInputType.number,
                 onSubmitted: (_) => _submitData(),
                 //(_) indicates that value is passed in parenthesis but not used
               ),
-              Container(
+              SizedBox(
                 height: 70,
                 child: Row(
                   children: [
@@ -90,7 +90,7 @@ class _NewTransactionState extends State<NewTransaction> {
                     ),
                     TextButton(
                       onPressed: _presentDatePicker,
-                      child: Text(
+                      child: const Text(
                         'Choose Date!',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -103,11 +103,11 @@ class _NewTransactionState extends State<NewTransaction> {
               ElevatedButton(
                 onPressed: _submitData,
                 //submitData is passed as a pointer as there is no wrapping anonymous function for it
-                child: Text('Add Transaction'),
                 style: ElevatedButton.styleFrom(
                   primary: Colors.purple[400],
                   onPrimary: Theme.of(context).textTheme.button.color,
                 ),
+                child: const Text('Add Transaction'),
               ),
             ],
           ),
