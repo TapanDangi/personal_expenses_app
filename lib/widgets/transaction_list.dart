@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import './transaction_item.dart';
 import '../models/transaction.dart';
 
 class TransactionList extends StatelessWidget {
@@ -38,48 +38,10 @@ class TransactionList extends StatelessWidget {
           )
         : ListView.builder(
             itemBuilder: ((context, index) {
-              return Card(
-                elevation: 5,
-                color: Colors.grey[200],
-                margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    radius: 30,
-                    child: FittedBox(
-                      child: Padding(
-                        padding: const EdgeInsets.all(6),
-                        child: Text(
-                          '${transactions[index].amount}',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  title: Text(
-                    transactions[index].title,
-                    style: Theme.of(context).textTheme.headline6,
-                  ),
-                  subtitle: Text(
-                    DateFormat.yMMMEd().format(transactions[index].date),
-                  ),
-                  trailing: isLandscape
-                      ? TextButton.icon(
-                          onPressed: () => deleteTx(transactions[index].id),
-                          icon: const Icon(Icons.delete),
-                          label: const Text('Delete'),
-                          style: TextButton.styleFrom(
-                            primary: Theme.of(context).errorColor,
-                          ),
-                        )
-                      : IconButton(
-                          icon: const Icon(Icons.delete),
-                          color: Theme.of(context).errorColor,
-                          onPressed: () => deleteTx(transactions[index].id),
-                        ),
-                ),
-              );
+              return TransactionItem(
+                  transaction: transactions[index],
+                  isLandscape: isLandscape,
+                  deleteTx: deleteTx);
             }),
             itemCount: transactions.length,
           );

@@ -62,10 +62,26 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   final List<Transaction> _userTransactions = [];
-
   bool _showChart = false;
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    super.initState();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print(state);
+  }
+
+  @override
+  dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   List<Transaction> get _recentTransactions {
     return _userTransactions.where((tx) {
@@ -127,13 +143,52 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-    final bool isLandscape = mediaQuery.orientation == Orientation.landscape;
-    //shows whether the device is potrait or landscape
+  List<Widget> _buildLandscapeContent(
+      MediaQueryData mediaQuery, AppBar appBar, SizedBox txListWidget) {
+    return [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text('Show Chart!'),
+          Switch(
+              value: _showChart,
+              onChanged: (val) {
+                setState(() {
+                  _showChart = val;
+                });
+              }),
+        ],
+      ),
+      _showChart
+          ? SizedBox(
+              height: (mediaQuery.size.height -
+                      appBar.preferredSize.height -
+                      mediaQuery.padding.top) *
+                  0.8,
+              //gets the height available in device after removing the height taken by appbar and status bar
+              child: Chart(recentTransactions: _recentTransactions),
+            )
+          : txListWidget
+    ];
+  }
 
-    final appBar = AppBar(
+  List<Widget> _buildPortraitContent(
+      MediaQueryData mediaQuery, AppBar appBar, SizedBox txListWidget) {
+    return [
+      SizedBox(
+        height: (mediaQuery.size.height -
+                appBar.preferredSize.height -
+                mediaQuery.padding.top) *
+            0.3,
+        //gets the height available in device after removing the height taken by appbar and status bar
+        child: Chart(recentTransactions: _recentTransactions),
+      ),
+      txListWidget,
+    ];
+  }
+
+  PreferredSizeWidget _buildTopBar() {
+    return AppBar(
       title: const Text('Personal Expenses'),
       actions: [
         IconButton(
@@ -142,7 +197,15 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ],
     );
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    //makes it easier to address mediaQuery objects
+    final bool isLandscape = mediaQuery.orientation == Orientation.landscape;
+    //shows whether the device is potrait or landscape
+    final appBar = _buildTopBar();
     final txListWidget = SizedBox(
       height: (mediaQuery.size.height -
               appBar.preferredSize.height -
@@ -162,40 +225,17 @@ class _MyHomePageState extends State<MyHomePage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (isLandscape)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('Show Chart!'),
-                  Switch(
-                      value: _showChart,
-                      onChanged: (val) {
-                        setState(() {
-                          _showChart = val;
-                        });
-                      }),
-                ],
+              ..._buildLandscapeContent(
+                mediaQuery,
+                appBar,
+                txListWidget,
               ),
             if (!isLandscape)
-              SizedBox(
-                height: (mediaQuery.size.height -
-                        appBar.preferredSize.height -
-                        mediaQuery.padding.top) *
-                    0.3,
-                //gets the height available in device after removing the height taken by appbar and status bar
-                child: Chart(recentTransactions: _recentTransactions),
+              ..._buildPortraitContent(
+                mediaQuery,
+                appBar,
+                txListWidget,
               ),
-            if (!isLandscape) txListWidget,
-            if (isLandscape)
-              _showChart
-                  ? SizedBox(
-                      height: (mediaQuery.size.height -
-                              appBar.preferredSize.height -
-                              mediaQuery.padding.top) *
-                          0.8,
-                      //gets the height available in device after removing the height taken by appbar and status bar
-                      child: Chart(recentTransactions: _recentTransactions),
-                    )
-                  : txListWidget
           ],
         ),
       ),
